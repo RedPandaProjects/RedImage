@@ -6,6 +6,7 @@
 #include "Nvtt/nvtt/QuickCompressDXT.h"
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "StbImage/stb_image_resize.h"
+#include "bc7gpu/CUDA/bc7_cuda.h"
 using namespace RedImageTool;
 
 template <typename T>
@@ -1292,7 +1293,21 @@ void RedTextureUtils::EndCompressor(RedTexturePixelFormat compressor, size_t w, 
 		Surface.stride = static_cast<u32>(w * 4);
 		bc7_enc_settings str;
 		GetProfile_alpha_slow(&str);
-		CompressBlocksBC7(&Surface, (u8*)out, &str);
+
+		size_t const num_blocks = w * h / 16;
+		size_t const compressed_size = num_blocks * sizeof(bc7_compressed_block);
+		bc7_compressed_block* p_compressed = reinterpret_cast<bc7_compressed_block*>(malloc(compressed_size));
+		if (bc7_cuda_compress(p_compressed, (u8*)in, w, h))
+		{
+			memcpy(out, p_compressed, compressed_size);
+		}
+		else
+		{
+			CompressBlocksBC7(&Surface, (u8*)out, &str);
+		}
+
+		free(p_compressed);
+
 		break;
 	}
 	default:

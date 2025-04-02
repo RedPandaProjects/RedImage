@@ -6,7 +6,7 @@
 int main()
 {
     RedImageTool::RedImage Test;
-    Test.LoadFromFile("test.jpg");
+    Test.LoadFromFile("test.png");
     Test.GenerateMipmap(RedImageTool::RedResizeFilter::Box);
     Test.Convert(RedImageTool::RedTexturePixelFormat::BC7);
     Test.SaveToDds("test.dds");
