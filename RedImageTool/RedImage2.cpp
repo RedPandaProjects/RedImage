@@ -130,5 +130,57 @@ bool RedImage::SaveToTga(const char * name, size_t depth)
 	assert(!RedTextureUtils::isCompressor(m_PixelFotmat));
 	assert(!RedTextureUtils::isFloatPixel(m_PixelFotmat));
 	return stbi_write_tga(name, static_cast<int>(m_Width), static_cast<int>(m_Height), static_cast<int>(RedTextureUtils::GetCountComp(m_PixelFotmat)), m_ImageBuffer + depth * RedTextureUtils::GetSizeInMemory(m_Width, m_Height, m_Mips, m_PixelFotmat));
+}
 
+bool RedImage::SaveToJpgMemory(void* dest_buffer, size_t dest_capacity, size_t& out_size, int quality, size_t depth)
+{
+	assert(m_Depth > depth);
+	assert(!RedTextureUtils::isCompressor(m_PixelFotmat));
+	assert(!RedTextureUtils::isFloatPixel(m_PixelFotmat));
+	assert(dest_buffer != nullptr);
+	assert(dest_capacity > 0);
+
+	struct JpegMemoryWriter
+	{
+		u8* buffer = nullptr;
+		size_t capacity = 0;
+		size_t size = 0;
+
+		static void WriteFunc(void* context, void* data, int len)
+		{
+			JpegMemoryWriter* writer = reinterpret_cast<JpegMemoryWriter*>(context);
+			if (writer->size + len > writer->capacity)
+			{
+				// Не влезает
+				return;
+			}
+
+			std::memcpy(writer->buffer + writer->size, data, len);
+			writer->size += len;
+		}
+	};
+
+	JpegMemoryWriter writer;
+	writer.buffer = reinterpret_cast<u8*>(dest_buffer);
+	writer.capacity = dest_capacity;
+	writer.size = 0;
+
+	const int width = static_cast<int>(m_Width);
+	const int height = static_cast<int>(m_Height);
+	const int components = static_cast<int>(RedTextureUtils::GetCountComp(m_PixelFotmat));
+	const u8* src = m_ImageBuffer + depth * RedTextureUtils::GetSizeInMemory(m_Width, m_Height, m_Mips, m_PixelFotmat);
+
+	bool success = stbi_write_jpg_to_func
+	(
+		JpegMemoryWriter::WriteFunc,
+		&writer,
+		width,
+		height,
+		components,
+		src,
+		quality
+	) != 0;
+
+	out_size = writer.size;
+	return success;
 }

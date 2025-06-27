@@ -38,6 +38,9 @@ namespace RedImageTool
 		bool SaveToBmp(const char* name, size_t depth = 0);
 		bool SaveToTga(const char* name, size_t depth = 0);
 		bool SaveToDds(const char* name);
+
+		bool SaveToJpgMemory(void* dest_buffer, size_t dest_capacity, size_t& out_size, int quality, size_t depth = 0);
+
 		void* operator*();
 		const void* operator*()const;
 
