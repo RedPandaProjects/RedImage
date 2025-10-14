@@ -1,0 +1,2 @@
+add_subdirectory(nvtt)
+add_subdirectory(ispc_texcomp)

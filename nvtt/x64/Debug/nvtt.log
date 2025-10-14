@@ -1,1 +1,0 @@
-﻿F:\GameDev\Utils\RedImage\nvtt\nvtt.vcxproj(327,5): error MSB4019: импортированный проект "F:\GameDev\Utils\BearBundle.props" не найден. Проверьте правильность выражения в объявлении Import "..\..\BearBundle.props" и наличие файла на диске.

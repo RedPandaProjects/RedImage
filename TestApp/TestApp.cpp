@@ -3,59 +3,25 @@
 
 #include <iostream>
 #include "..\RedImageTool\RedImage.hpp"
-
 int main()
 {
-    using namespace RedImageTool;
-
-    RedImage Test;
-
-    if (!Test.LoadFromFile("test.png"))
-    {
-        printf("Failed to load input image\n");
-        return 1;
-    }
-
-    Test.GenerateMipmap(RedResizeFilter::Box);
-
-    Test.Convert(RedTexturePixelFormat::BC7);
-    if (!Test.SaveToDds("test.dds"))
-    {
-        printf("Failed to save DDS\n");
-        return 1;
-    }
-
-    Test.Convert(RedTexturePixelFormat::R8G8B8A8);
-    if (!Test.SaveToTga("test.tga"))
-    {
-        printf("Failed to save TGA\n");
-        return 1;
-    }
-
-    // Сохраняем JPEG в память
-    constexpr size_t jpeg_buffer_capacity = 1024 * 1024; // 1MB буфер
-    u8* jpeg_buffer = new u8[jpeg_buffer_capacity];
-    size_t jpeg_size = 0;
-
-    if (Test.SaveToJpgMemory(jpeg_buffer, jpeg_buffer_capacity, jpeg_size, 75))
-    {
-        printf("JPEG saved to memory: %zu bytes\n", jpeg_size);
-
-        // Например, можно сохранить его из памяти на диск для проверки
-        FILE* f = fopen("test_memory.jpg", "wb");
-        if (f)
-        {
-            fwrite(jpeg_buffer, 1, jpeg_size, f);
-            fclose(f);
-            printf("Saved JPEG from memory to 'test_memory.jpg'\n");
-        }
-    }
-    else
-    {
-        printf("Failed to save JPEG to memory\n");
-    }
-
-    delete[] jpeg_buffer;
-
+    RedImageTool::RedImage Test;
+    Test.LoadFromFile("test.jpg");
+    Test.GenerateMipmap(RedImageTool::RedResizeFilter::Box);
+    Test.Convert(RedImageTool::RedTexturePixelFormat::BC7);
+    Test.SaveToDds("test.dds");
+    Test.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
+    Test.SaveToTga("test.tga");
     return 0;
 }
+
+// Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
+// Отладка программы: F5 или меню "Отладка" > "Запустить отладку"
+
+// Советы по началу работы 
+//   1. В окне обозревателя решений можно добавлять файлы и управлять ими.
+//   2. В окне Team Explorer можно подключиться к системе управления версиями.
+//   3. В окне "Выходные данные" можно просматривать выходные данные сборки и другие сообщения.
+//   4. В окне "Список ошибок" можно просматривать ошибки.
+//   5. Последовательно выберите пункты меню "Проект" > "Добавить новый элемент", чтобы создать файлы кода, или "Проект" > "Добавить существующий элемент", чтобы добавить в проект существующие файлы кода.
+//   6. Чтобы снова открыть этот проект позже, выберите пункты меню "Файл" > "Открыть" > "Проект" и выберите SLN-файл.
