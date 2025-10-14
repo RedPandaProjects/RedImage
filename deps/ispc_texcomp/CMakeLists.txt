@@ -6,15 +6,18 @@ set(ISPC_COMPILER "${CMAKE_CURRENT_SOURCE_DIR}/../ISPC/win/ispc.exe" CACHE FILEP
 function(compile_ispc INPUT_FILE OUTPUT_LIST)
     get_filename_component(FILE_WE ${INPUT_FILE} NAME_WE)
     set(OUTPUT_OBJ "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}.obj")
+    set(OUTPUT_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/${FILE_WE}.h")
 
     add_custom_command(
-        OUTPUT ${OUTPUT_OBJ}
+        OUTPUT ${OUTPUT_OBJ} ${OUTPUT_HEADER}
         COMMAND ${ISPC_COMPILER}
             ${INPUT_FILE}
-            --target=avx1-i32x8
+            --target=sse2
             --arch=x86-64
             -O2
             -o ${OUTPUT_OBJ}
+            -h "${OUTPUT_HEADER}"
+            --opt=fast-math
         DEPENDS ${INPUT_FILE}
         COMMENT "Compiling ISPC: ${INPUT_FILE}"
         VERBATIM
