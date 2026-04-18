@@ -2,3 +2,4 @@
 build
 deps/ispc_texcomp/kernel.h
 deps/ispc_texcomp/kernel_astc.h
+Library
