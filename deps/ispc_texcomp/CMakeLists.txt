@@ -1,11 +1,26 @@
 file(GLOB_RECURSE ISPCTC_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 file(GLOB_RECURSE ISPCTC_ISPC_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.ispc")
 
-set(ISPC_COMPILER "${CMAKE_CURRENT_SOURCE_DIR}/../ISPC/win/ispc.exe" CACHE FILEPATH "Path to ISPC compiler")
-
+if(WIN32)
+    set(ISPC_COMPILER "${CMAKE_CURRENT_SOURCE_DIR}/../ISPC/win/ispc.exe" CACHE FILEPATH "Path to ISPC compiler")
+else()
+    find_program(ISPC_COMPILER ispc)
+    if(NOT ISPC_COMPILER)
+        message(FATAL_ERROR "ISPC compiler not found! Please install ispc (sudo apt install ispc or download from https://github.com/ispc/ispc)")
+    endif()
+endif()
 function(compile_ispc INPUT_FILE OUTPUT_LIST)
     get_filename_component(FILE_WE ${INPUT_FILE} NAME_WE)
-    set(OUTPUT_OBJ "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}.obj")
+    
+    if(WIN32)
+        set(OBJ_EXT ".obj")
+        set(PIC_FLAG "")
+    else()
+        set(OBJ_EXT ".o")
+        set(PIC_FLAG "--pic")
+    endif()
+    
+    set(OUTPUT_OBJ "${CMAKE_CURRENT_BINARY_DIR}/${FILE_WE}${OBJ_EXT}")
     set(OUTPUT_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/${FILE_WE}.h")
 
     add_custom_command(
@@ -18,6 +33,7 @@ function(compile_ispc INPUT_FILE OUTPUT_LIST)
             -o ${OUTPUT_OBJ}
             -h "${OUTPUT_HEADER}"
             --opt=fast-math
+            ${PIC_FLAG}
         DEPENDS ${INPUT_FILE}
         COMMENT "Compiling ISPC: ${INPUT_FILE}"
         VERBATIM

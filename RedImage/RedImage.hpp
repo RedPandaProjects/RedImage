@@ -41,11 +41,23 @@ namespace RedImageTool
 	using u16 = unsigned short;
 	using u32 = unsigned int;
 };
-#ifdef REDCORE_EXPORTS
-#define REDCORE_API  __declspec(dllexport) 
+
+#if defined(_WIN32) || defined(_WIN64)
+    #ifdef REDCORE_EXPORTS
+        #define REDCORE_API __declspec(dllexport)
+    #else
+        #define REDCORE_API __declspec(dllimport)
+    #endif
+#elif defined(__GNUC__) || defined(__clang__)
+    #ifdef REDCORE_EXPORTS
+        #define REDCORE_API __attribute__((visibility("default")))
+    #else
+        #define REDCORE_API 
+    #endif
 #else
-#define REDCORE_API  __declspec(dllimport) 
+    #define REDCORE_API 
 #endif
+
 #include "RedMemery.h"
 #include "RedColor.h"
 #include "RedTextureUtils.h"

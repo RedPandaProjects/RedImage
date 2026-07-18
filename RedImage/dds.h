@@ -7,14 +7,23 @@
 
 #ifndef _DDS_H_
 #define _DDS_H_
-#include <Windows.h>
+
 #define DDS_FOURCC 0x00000004 // DDPF_FOURCC
 #define DDS_ALPHA 0x1
 #define DDS_RGB 0x00000040 // DDPF_RGB
 #define DDS_RGBA 0x00000041 // DDPF_RGB | DDPF_ALPHAPIXELS
+
+#ifdef _WIN32
+#   include <windows.h>
+#else
+using DWORD = unsigned int;
+using BYTE = unsigned char;
+#endif
+
 #ifdef MAKEFOURCC
-#undef MAKEFOURCC
+#   undef MAKEFOURCC
 #endif 
+
 #define MAKEFOURCC(ch0, ch1, ch2, ch3)                              \
                 ((DWORD)(BYTE)(ch0) | ((DWORD)(BYTE)(ch1) << 8) |   \
                 ((DWORD)(BYTE)(ch2) << 16) | ((DWORD)(BYTE)(ch3) << 24 ))
