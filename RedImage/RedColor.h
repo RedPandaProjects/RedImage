@@ -1,4 +1,6 @@
 #pragma once 
+#include <cstring>
+
 namespace RedImageTool
 {
 	class REDCORE_API  RedColor
