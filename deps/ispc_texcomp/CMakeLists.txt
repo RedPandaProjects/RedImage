@@ -9,6 +9,15 @@ else()
         message(FATAL_ERROR "ISPC compiler not found! Please install ispc (sudo apt install ispc or download from https://github.com/ispc/ispc)")
     endif()
 endif()
+# ISPC targets are architecture specific: x86-64 uses SSE2, arm64 uses NEON.
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(arm64|aarch64)")
+    set(ISPC_ARCH "aarch64")
+    set(ISPC_TARGET "neon-i32x4")
+else()
+    set(ISPC_ARCH "x86-64")
+    set(ISPC_TARGET "sse2")
+endif()
+
 function(compile_ispc INPUT_FILE OUTPUT_LIST)
     get_filename_component(FILE_WE ${INPUT_FILE} NAME_WE)
     
@@ -27,8 +36,8 @@ function(compile_ispc INPUT_FILE OUTPUT_LIST)
         OUTPUT ${OUTPUT_OBJ} ${OUTPUT_HEADER}
         COMMAND ${ISPC_COMPILER}
             ${INPUT_FILE}
-            --target=sse2
-            --arch=x86-64
+            --target=${ISPC_TARGET}
+            --arch=${ISPC_ARCH}
             -O2
             -o ${OUTPUT_OBJ}
             -h "${OUTPUT_HEADER}"

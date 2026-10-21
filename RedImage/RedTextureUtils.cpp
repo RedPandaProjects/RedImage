@@ -1,6 +1,7 @@
 #include "RedImage.hpp"
 #include <ispc_texcomp.h>
 
+#include "nvmath/Vector.inl"
 #include "nvimage/ColorBlock.h"
 #include "nvimage/BlockDXT.h"
 #include "nvtt/CompressorDX9.h"
